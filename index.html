@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Fun Game Zone</title>
+        <style>
+            body {
+                font-family: 'Comic Sans MS', cursive, sans-serif;
+                background-color: #f0f8ff;
+                color: #333;
+                margin: 0;
+                padding: 0;
+                text-align: center;
+            }
+            h1 {
+                color: #ff4500;
+                margin-top: 50px;
+                text-shadow: 2px 2px #ffa500;
+            }
+            h2 {
+                color: #008080;
+                text-shadow: 1px 1px #40e0d0;
+            }
+            .game-container {
+                margin: 30px auto;
+                padding: 20px;
+                width: 80%;
+                max-width: 400px;
+                background-color: #fff;
+                border: 2px solid #008080;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            button {
+                font-size: 16px;
+                padding: 10px 20px;
+                margin: 10px;
+                background-color: #ff4500;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            button:hover {
+                background-color: #e03e00;
+            }
+            .output {
+                margin-top: 20px;
+                font-size: 20px;
+                color: #2e8b57;
+                font-weight: bold;
+            }
+            .character {
+                font-size: 60px;
+                margin: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Welcome to the Game Zone!</h1>
+        <h2>Memory Match Game</h2>
+        <div class="game-container">
+            <p>Match the pairs of emojis as quickly as you can!</p>
+            <div id="gameBoard" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                <!-- Cards will be inserted dynamically -->
+            </div>
+            <p id="status" class="output">Click on two cards to start!</p>
+            <button onclick="startGame()">Restart Game</button>
+        </div>
+        <script>
+            const emojis = ["😀", "😎", "🥳", "🤓", "😀", "😎", "🥳", "🤓"];
+            let shuffledEmojis = [];
+            let firstCard = null;
+            let secondCard = null;
+            let matches = 0;
+
+            function shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            function createCard(emoji, index) {
+                const card = document.createElement("div");
+                card.classList.add("card");
+                card.style.border = "1px solid #ccc";
+                card.style.padding = "20px";
+                card.style.backgroundColor = "#eee";
+                card.style.cursor = "pointer";
+                card.style.fontSize = "24px";
+                card.dataset.index = index;
+                card.textContent = "?";
+                card.addEventListener("click", () => flipCard(card, emoji));
+                return card;
+            }
+
+            function flipCard(card, emoji) {
+                if (card.textContent !== "?" || secondCard) return;
+
+                card.textContent = emoji;
+                if (!firstCard) {
+                    firstCard = card;
+                } else {
+                    secondCard = card;
+                    checkMatch();
+                }
+            }
+
+            function checkMatch() {
+                const firstEmoji = shuffledEmojis[firstCard.dataset.index];
+                const secondEmoji = shuffledEmojis[secondCard.dataset.index];
+
+                if (firstEmoji === secondEmoji) {
+                    matches++;
+                    document.getElementById("status").textContent = `Matches: ${matches}`;
+                    firstCard = null;
+                    secondCard = null;
+                    if (matches === emojis.length / 2) {
+                        document.getElementById("status").textContent = "You Win!";
+                    }
+                } else {
+                    setTimeout(() => {
+                        firstCard.textContent = "?";
+                        secondCard.textContent = "?";
+                        firstCard = null;
+                        secondCard = null;
+                    }, 1000);
+                }
+            }
+
+            function startGame() {
+                const gameBoard = document.getElementById("gameBoard");
+                gameBoard.innerHTML = "";
+                matches = 0;
+                firstCard = null;
+                secondCard = null;
+                document.getElementById("status").textContent = "Click on two cards to start!";
+
+                shuffledEmojis = [...emojis];
+                shuffle(shuffledEmojis);
+                shuffledEmojis.forEach((emoji, index) => {
+                    gameBoard.appendChild(createCard(emoji, index));
+                });
+            }
+
+            startGame();
+        </script>
+    </body>
+</html>
