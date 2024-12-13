@@ -65,6 +65,7 @@
                 <!-- Cards will be inserted dynamically -->
             </div>
             <p id="status" class="output">Click on two cards to start!</p>
+            <p id="score" class="output">Score: 0 | High Score: 0</p>
             <button onclick="startGame()">Restart Game</button>
         </div>
         <script>
@@ -73,6 +74,8 @@
             let firstCard = null;
             let secondCard = null;
             let matches = 0;
+            let score = 0;
+            let highScore = 0;
 
             function shuffle(array) {
                 for (let i = array.length - 1; i > 0; i--) {
@@ -113,11 +116,16 @@
 
                 if (firstEmoji === secondEmoji) {
                     matches++;
-                    document.getElementById("status").textContent = `Matches: ${matches}`;
+                    score += 10;
+                    updateScore();
                     firstCard = null;
                     secondCard = null;
                     if (matches === emojis.length / 2) {
                         document.getElementById("status").textContent = "You Win!";
+                        if (score > highScore) {
+                            highScore = score;
+                        }
+                        updateScore();
                     }
                 } else {
                     setTimeout(() => {
@@ -129,13 +137,19 @@
                 }
             }
 
+            function updateScore() {
+                document.getElementById("score").textContent = `Score: ${score} | High Score: ${highScore}`;
+            }
+
             function startGame() {
                 const gameBoard = document.getElementById("gameBoard");
                 gameBoard.innerHTML = "";
                 matches = 0;
+                score = 0;
                 firstCard = null;
                 secondCard = null;
                 document.getElementById("status").textContent = "Click on two cards to start!";
+                updateScore();
 
                 shuffledEmojis = [...emojis];
                 shuffle(shuffledEmojis);
